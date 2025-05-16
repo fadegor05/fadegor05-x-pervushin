@@ -1,12 +1,11 @@
-// src/Background.tsx (предполагаемое расположение)
 import { useMemo } from 'react'
-import { Carousel } from './Carousel' // Убедитесь, что путь правильный
+import { Carousel } from './Carousel'
 
-const imageModules = import.meta.glob('/assets/*.(png|jpg|jpeg|gif|svg)', {
+const mediaModules = import.meta.glob('/assets/*.(png|jpg|jpeg|gif|svg|mp4)', {
 	eager: true,
 })
 
-const imageUrls: string[] = Object.values(imageModules).map(
+const mediaUrls: string[] = Object.values(mediaModules).map(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	(module: any) => module.default
 )
@@ -23,22 +22,22 @@ function shuffleArray<T>(array: T[]): T[] {
 export function Background() {
 	const numRows = 3
 
-	const rowsOfImageUrls = useMemo(() => {
-		const shuffledUrls = shuffleArray(imageUrls)
+	const rowsOfMediaUrls = useMemo(() => {
+		const shuffledUrls = shuffleArray(mediaUrls)
 		const newRows: string[][] = []
 
 		if (shuffledUrls.length === 0) {
 			return Array(numRows).fill([])
 		}
 
-		const totalImages = shuffledUrls.length
+		const totalMediaItems = shuffledUrls.length
 		let currentIndex = 0
 
 		for (let i = 0; i < numRows; i++) {
 			const itemsInThisRow = Math.ceil(
-				(totalImages - currentIndex) / (numRows - i)
+				(totalMediaItems - currentIndex) / (numRows - i)
 			)
-			const endIndex = Math.min(currentIndex + itemsInThisRow, totalImages)
+			const endIndex = Math.min(currentIndex + itemsInThisRow, totalMediaItems)
 
 			if (currentIndex < endIndex) {
 				newRows.push(shuffledUrls.slice(currentIndex, endIndex))
@@ -55,10 +54,10 @@ export function Background() {
 
 	return (
 		<div className='fixed inset-0 z-0 h-screen w-screen flex flex-col justify-around items-center'>
-			{rowsOfImageUrls.map((rowUrls, rowIndex) => (
+			{rowsOfMediaUrls.map((rowUrls, rowIndex) => (
 				<Carousel
 					key={rowIndex}
-					imageUrls={rowUrls}
+					mediaUrls={rowUrls}
 					speed={'normal'}
 					isReversed={rowIndex % 2 === 0}
 				/>

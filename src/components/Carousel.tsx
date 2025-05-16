@@ -1,29 +1,30 @@
-// src/Carousel.tsx (предполагаемое расположение)
+// src/Carousel.tsx
 import { useMemo } from 'react'
 import { ImageComponent } from './ImageComponent'
+import { VideoComponent } from './VideoComponent'
 
 interface CarouselProps {
-	imageUrls: string[]
+	mediaUrls: string[]
 	isReversed: boolean
 	speed: 'normal' | 'slow'
 }
 
 export function Carousel({
-	imageUrls,
+	mediaUrls,
 	isReversed,
 	speed = 'slow',
 }: CarouselProps) {
-	if (!imageUrls || imageUrls.length === 0) {
+	if (!mediaUrls || mediaUrls.length === 0) {
 		return null
 	}
 
-	const duplicatedImageUrls = useMemo(
-		() => [...imageUrls, ...imageUrls],
-		[imageUrls]
+	const duplicatedMediaUrls = useMemo(
+		() => [...mediaUrls, ...mediaUrls],
+		[mediaUrls]
 	)
 
 	const animationClass =
-		speed == 'normal'
+		speed === 'normal'
 			? 'animate-infinite-scroll-normal'
 			: 'animate-infinite-scroll-slow'
 
@@ -31,14 +32,31 @@ export function Carousel({
 		? '[animation-direction:reverse]'
 		: ''
 
+	const getMediaType = (url: string): 'image' | 'video' | 'unknown' => {
+		const extension = url.split('.').pop()?.toLowerCase()
+		if (!extension) return 'unknown'
+
+		if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(extension)) {
+			return 'image'
+		}
+		if (['mp4'].includes(extension)) {
+			return 'video'
+		}
+		return 'unknown'
+	}
+
 	return (
 		<div className='w-full overflow-hidden select-none group'>
 			<div className={`flex ${animationClass} ${reverseAnimationClass}`}>
-				{duplicatedImageUrls.map((imageUrl, index) => (
-					<div key={`${imageUrl}-${index}`} className='flex-shrink-0'>
-						<ImageComponent src={imageUrl} />
-					</div>
-				))}
+				{duplicatedMediaUrls.map((mediaUrl, index) => {
+					const mediaType = getMediaType(mediaUrl)
+					return (
+						<div key={`${mediaUrl}-${index}`} className='flex-shrink-0'>
+							{mediaType === 'image' && <ImageComponent src={mediaUrl} />}
+							{mediaType === 'video' && <VideoComponent src={mediaUrl} />}
+						</div>
+					)
+				})}
 			</div>
 		</div>
 	)
