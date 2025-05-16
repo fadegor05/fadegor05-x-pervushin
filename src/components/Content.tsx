@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 const REFERENCE_DATE_STRING = '2024-10-18T15:56:39+03:00'
 
